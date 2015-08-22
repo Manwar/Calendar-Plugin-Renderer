@@ -1,0 +1,17 @@
+Changes
+LICENSE
+MANIFEST
+MANIFEST.SKIP
+Makefile.PL
+README
+lib/Calendar/Plugin/Renderer.pm
+lib/Calendar/Plugin/Renderer/SVG.pm
+lib/Calendar/Plugin/Renderer/SVG/Page.pm
+lib/Calendar/Plugin/Renderer/SVG/Text.pm
+lib/Calendar/Plugin/Renderer/SVG/Box.pm
+lib/Calendar/Plugin/Renderer/SVG/Label.pm
+t/00-load.t
+t/manifest.t
+t/pod.t
+t/bahai.xml
+t/saka.xml
