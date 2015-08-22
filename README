@@ -1,4 +1,4 @@
-Calendar-Renderer
+Calendar-Plugin-Renderer
 
 The README  is  used  to  introduce the module and provide instructions on how to
 install the module, any machine dependencies it may have (for example C compilers
@@ -25,21 +25,21 @@ SUPPORT AND DOCUMENTATION
 After  installing, you  can  find documentation for this module with  the perldoc
 command.
 
-    perldoc Calendar::Renderer
+    perldoc Calendar::Plugin::Renderer
 
 You can also look for information at:
 
     RT, CPAN's request tracker
-        http://rt.cpan.org/NoAuth/Bugs.html?Dist=Calendar-Renderer
+        http://rt.cpan.org/NoAuth/Bugs.html?Dist=Calendar-Plugin-Renderer
 
     AnnoCPAN, Annotated CPAN documentation
-        http://annocpan.org/dist/Calendar-Renderer
+        http://annocpan.org/dist/Calendar-Plugin-Renderer
 
     CPAN Ratings
-        http://cpanratings.perl.org/d/Calendar-Renderer
+        http://cpanratings.perl.org/d/Calendar-Plugin-Renderer
 
     Search CPAN
-        http://search.cpan.org/dist/Calendar-Renderer/
+        http://search.cpan.org/dist/Calendar-Plugin-Renderer/
 
 LICENSE AND COPYRIGHT
 
