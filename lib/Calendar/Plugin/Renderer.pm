@@ -48,13 +48,13 @@ Base class to render Calendar in SVG format.
 
 =head1 METHODS
 
-=head2 svg_calendar(\%param)
+=head2 as_svg(\%param)
 
 Returns the requested calendar month in SVG format.
 
 =cut
 
-sub svg_calendar {
+sub as_svg {
     my ($self, $params) = @_;
 
     my $adjust_height = $params->{adjust_height} || 0;
@@ -178,7 +178,7 @@ sub svg_calendar {
         month_name  => $month_name,
         days        => $days });
 
-    return $svg->as_svg;
+    return $svg->as_string;
 }
 
 =head1 AUTHOR

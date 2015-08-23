@@ -80,11 +80,11 @@ sub process {
     $self->_row($row);
 }
 
-=head2 as_svg()
+=head2 as_string()
 
 =cut
 
-sub as_svg {
+sub as_string {
     my ($self) = @_;
 
     my $p_height = sprintf("%d%s", $self->page->height, $self->page->height_unit);

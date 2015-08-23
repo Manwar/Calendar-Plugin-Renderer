@@ -11,7 +11,7 @@ lib/Calendar/Plugin/Renderer/SVG/Text.pm
 lib/Calendar/Plugin/Renderer/SVG/Box.pm
 lib/Calendar/Plugin/Renderer/SVG/Label.pm
 t/00-load.t
-t/01-svg-calendar.t
+t/01-as-svg.t
 t/manifest.t
 t/pod.t
 t/bahai.xml
