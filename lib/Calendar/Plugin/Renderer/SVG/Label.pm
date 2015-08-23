@@ -25,11 +25,7 @@ has 'style' => (is => 'ro');
 
 =head1 DESCRIPTION
 
-=head1 SYNOPSIS
-
-=head1 CONSTRUCTOR
-
-=head1 METHODS
+B<FOR INTERNAL USE ONLY>.
 
 =head1 AUTHOR
 

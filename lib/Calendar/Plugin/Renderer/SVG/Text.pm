@@ -27,11 +27,7 @@ has 'value'     => (is => 'rw');
 
 =head1 DESCRIPTION
 
-=head1 SYNOPSIS
-
-=head1 CONSTRUCTOR
-
-=head1 METHODS
+B<FOR INTERNAL USE ONLY>.
 
 =head1 AUTHOR
 
