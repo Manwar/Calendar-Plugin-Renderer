@@ -30,13 +30,7 @@ has '_row'          => (is => 'rw');
 
 =head1 DESCRIPTION
 
-=head1 SYNOPSIS
-
-=head1 CONSTRUCTOR
-
-=head1 METHODS
-
-=head2 process(\%params)
+B<FOR INTERNAL USE ONLY>
 
 =cut
 
@@ -79,10 +73,6 @@ sub process {
 
     $self->_row($row);
 }
-
-=head2 as_string()
-
-=cut
 
 sub as_string {
     my ($self) = @_;

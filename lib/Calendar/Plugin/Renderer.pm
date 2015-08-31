@@ -46,11 +46,47 @@ Base class to render Calendar in SVG format.
 
 =head1 SYNOPSIS
 
+    package Cal;
+
+    use Calendar::Plugin::Renderer;
+    use Moo;
+    use namespace::clean;
+    use Role::Tiny;
+
+    sub BUILD {
+        my ($self) = @_;
+        Role::Tiny->apply_roles_to_object($self, 'Calendar::Plugin::Renderer');
+    }
+
+    package main;
+
+    use strict; use warnings;
+    use Cal;
+
+    my $cal = Cal->new;
+    print $cal->as_svg({
+        start_index => 1,
+        month_name  => 'Chaitra',
+        days        => 30,
+        year        => 1937 });
+
 =head1 METHODS
 
 =head2 as_svg(\%param)
 
 Returns the requested calendar month in SVG format.
+
+Expected paramaeters are as below:
+
+    +---------------+-----------------------------------------------------------+
+    | Key           | Description                                               |
+    +---------------+-----------------------------------------------------------+
+    | start_index   | Index of first day of the month. (1-Sun,2-Mon etc)        |
+    | year          | Calendar year.                                            |
+    | month_name    | Calendar month.                                           |
+    | days          | Days count in the month.                                  |
+    | adjust_height | Adjust height of the rows in Calendar. (Optional)         |
+    +---------------+-----------------------------------------------------------+
 
 =cut
 
