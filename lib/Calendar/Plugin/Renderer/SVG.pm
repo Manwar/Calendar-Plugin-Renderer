@@ -19,12 +19,12 @@ use SVG;
 use Moo;
 use namespace::clean;
 
-has 'days'          => (is => 'rw');
-has 'month'         => (is => 'rw');
-has 'year'          => (is => 'rw');
-has 'wdays'         => (is => 'rw');
-has 'page'          => (is => 'rw');
-has 'boundary_box'  => (is => 'rw');
+has 'days'          => (is => 'rw', required => 1);
+has 'month'         => (is => 'rw', required => 1);
+has 'year'          => (is => 'rw', required => 1);
+has 'wdays'         => (is => 'rw', required => 1);
+has 'page'          => (is => 'rw', required => 1);
+has 'boundary_box'  => (is => 'rw', required => 1);
 has 'adjust_height' => (is => 'ro', default => sub { 0 });
 has '_row'          => (is => 'rw');
 
