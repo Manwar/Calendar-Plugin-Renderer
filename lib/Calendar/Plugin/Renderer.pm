@@ -42,7 +42,9 @@ my $MAX_WEEK_ROW             = 5;
 
 =head1 DESCRIPTION
 
-Base class to render Calendar in SVG format.
+Base class  to render Calendar, currently in SVG format only. This plugin is soon
+to be  plugged  into L<Calendar::Bahai>, L<Calendar::Hijri>, C<Calendar::Persian>
+and C<Calendar::Saka>.
 
 =head1 SYNOPSIS
 
@@ -64,7 +66,7 @@ Base class to render Calendar in SVG format.
     use Cal;
 
     my $cal = Cal->new;
-    print $cal->as_svg({
+    print $cal->svg_calendar({
         start_index => 1,
         month_name  => 'Chaitra',
         days        => 30,
@@ -72,7 +74,7 @@ Base class to render Calendar in SVG format.
 
 =head1 METHODS
 
-=head2 as_svg(\%param)
+=head2 svg_calendar(\%param)
 
 Returns the requested calendar month in SVG format.
 
@@ -90,7 +92,7 @@ Expected paramaeters are as below:
 
 =cut
 
-sub as_svg {
+sub svg_calendar {
     my ($self, $params) = @_;
 
     my $adjust_height = $params->{adjust_height} || 0;
@@ -224,6 +226,14 @@ Mohammad S Anwar, C<< <mohammad.anwar at yahoo.com> >>
 =head1 REPOSITORY
 
 L<https://github.com/Manwar/Calendar-Plugin-Renderer>
+
+=head1 SEE ALSO
+
+L<SVG::Calendar>
+
+=head1 ACKNOWLEDGEMENT
+
+Inspired by the package L<SVG::Calendar> so that it can be used as a plugin.
 
 =head1 BUGS
 

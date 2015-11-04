@@ -15,7 +15,7 @@ sub calendar_bahai {
     my ($self) = @_;
 
     # Month: 1, Year: 172
-    return $self->as_svg({
+    return $self->svg_calendar({
         adjust_height => 21,
         start_index   => 7,
         month_name    => 'Baha',
@@ -27,7 +27,7 @@ sub calendar_saka {
     my ($self) = @_;
 
     # Month: 1, Year: 1937
-    return $self->as_svg({
+    return $self->svg_calendar({
         start_index => 1,
         month_name  => 'Chaitra',
         days        => 30,
