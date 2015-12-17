@@ -1,6 +1,7 @@
 package Calendar::Plugin::Renderer::SVG::Text;
 
-$Calendar::Plugin::Renderer::SVG::Text::VERSION = '0.01';
+$Calendar::Plugin::Renderer::SVG::Text::VERSION   = '0.01';
+$Calendar::Plugin::Renderer::SVG::Text::AUTHORITY = 'cpan:MANWAR';
 
 =head1 NAME
 

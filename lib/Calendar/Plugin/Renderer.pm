@@ -1,6 +1,7 @@
 package Calendar::Plugin::Renderer;
 
-$Calendar::Plugin::Renderer::VERSION = '0.01';
+$Calendar::Plugin::Renderer::VERSION   = '0.01';
+$Calendar::Plugin::Renderer::AUTHORITY = 'cpan:MANWAR';
 
 =head1 NAME
 
