@@ -225,7 +225,7 @@ Mohammad S Anwar, C<< <mohammad.anwar at yahoo.com> >>
 
 =head1 REPOSITORY
 
-L<https://github.com/Manwar/Calendar-Plugin-Renderer>
+L<https://github.com/manwar/Calendar-Plugin-Renderer>
 
 =head1 SEE ALSO
 
