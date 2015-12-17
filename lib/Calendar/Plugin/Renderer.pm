@@ -1,6 +1,6 @@
 package Calendar::Plugin::Renderer;
 
-$Calendar::Plugin::Renderer::VERSION   = '0.01';
+$Calendar::Plugin::Renderer::VERSION   = '0.02';
 $Calendar::Plugin::Renderer::AUTHORITY = 'cpan:MANWAR';
 
 =head1 NAME
@@ -9,7 +9,7 @@ Calendar::Plugin::Renderer - Interface to render calendar.
 
 =head1 VERSION
 
-Version 0.01
+Version 0.02
 
 =cut
 
@@ -44,8 +44,8 @@ my $MAX_WEEK_ROW             = 5;
 =head1 DESCRIPTION
 
 Base class  to render Calendar, currently in SVG format only. This plugin is soon
-to be  plugged  into L<Calendar::Bahai>, L<Calendar::Hijri>, C<Calendar::Persian>
-and C<Calendar::Saka>.
+to be  plugged  into L<Calendar::Bahai>, L<Calendar::Hijri>, L<Calendar::Persian>
+and L<Calendar::Saka>.
 
 =head1 SYNOPSIS
 

@@ -11,7 +11,6 @@ WriteMakefile(
     VERSION_FROM       => 'lib/Calendar/Plugin/Renderer.pm',
     ABSTRACT_FROM      => 'lib/Calendar/Plugin/Renderer.pm',
     LICENSE            => 'artistic_2',
-    PL_FILES           => {},
     MIN_PERL_VERSION   => 5.006,
     CONFIGURE_REQUIRES => {
         'ExtUtils::MakeMaker' => 0,
