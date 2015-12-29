@@ -36,18 +36,34 @@ sub calendar_saka {
 
 package main;
 
-use strict;use warnings;
+use strict; use warnings;
 use Test::More;
-use Path::Tiny qw(path);
+use File::Temp qw(tempfile tempdir);
+use XML::SemanticDiff;
 
 eval "use Role::Tiny";
 plan skip_all => "Role::Tiny required for testing Calendar::Plugin::Renderer" if $@;
 
 my $T = T->new;
 
-is($T->calendar_bahai, get('t/bahai.xml'));
-is($T->calendar_saka,  get('t/saka.xml' ));
+is(is_same_svg($T->calendar_bahai, 't/bahai.xml'), 1);
+is(is_same_svg($T->calendar_saka, 't/saka.xml' ), 1);
 
-sub get { return path($_[0])->slurp_utf8; }
+is(is_same_svg($T->calendar_bahai, 't/fake-bahai.xml'), 0);
+is(is_same_svg($T->calendar_saka, 't/fake-saka.xml' ), 0);
+
+sub is_same_svg {
+    my ($svg, $expected) = @_;
+
+    my $dir = tempdir( CLEANUP => 1 );
+    my ($fh, $filename) = tempfile( DIR => $dir );
+    print $fh $svg;
+    close $fh;
+
+    my $xml = XML::SemanticDiff->new;
+    my @changes = $xml->compare($filename, $expected);
+
+    return (scalar(@changes))?(0):(1);
+}
 
 done_testing();

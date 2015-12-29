@@ -15,8 +15,10 @@ WriteMakefile(
     CONFIGURE_REQUIRES => {
         'ExtUtils::MakeMaker' => 0,
     },
-    BUILD_REQUIRES   => {
-        'Test::More' => 0,
+    BUILD_REQUIRES  => {
+        'Test::More'        => 0,
+        'File::Temp'        => 0,
+        'XML::SemanticDiff' => 0,
     },
     PREREQ_PM => {
         'SVG'              => '2.64',

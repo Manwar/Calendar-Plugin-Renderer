@@ -1,5 +1,8 @@
 Revision history for Calendar-Plugin-Renderer
 
+0.03  Tue Dec 29 02:00:00 2015
+      - Attempted to fix the test failure reported by CPAN Testers.
+
 0.02  Thu Dec 17 14:50:00 2015
       - Fixed typo in the pod document.
 

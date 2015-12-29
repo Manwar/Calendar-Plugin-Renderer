@@ -1,6 +1,6 @@
 package Calendar::Plugin::Renderer::SVG::Box;
 
-$Calendar::Plugin::Renderer::SVG::Box::VERSION   = '0.02';
+$Calendar::Plugin::Renderer::SVG::Box::VERSION   = '0.03';
 $Calendar::Plugin::Renderer::SVG::Box::AUTHORITY = 'cpan:MANWAR';
 
 =head1 NAME
@@ -9,7 +9,7 @@ Calendar::Plugin::Renderer::SVG::Box - Interface to 'box' of calendar in SVG for
 
 =head1 VERSION
 
-Version 0.02
+Version 0.03
 
 =cut
 
