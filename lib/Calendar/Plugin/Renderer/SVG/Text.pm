@@ -1,6 +1,6 @@
 package Calendar::Plugin::Renderer::SVG::Text;
 
-$Calendar::Plugin::Renderer::SVG::Text::VERSION   = '0.03';
+$Calendar::Plugin::Renderer::SVG::Text::VERSION   = '0.04';
 $Calendar::Plugin::Renderer::SVG::Text::AUTHORITY = 'cpan:MANWAR';
 
 =head1 NAME
@@ -9,7 +9,7 @@ Calendar::Plugin::Renderer::SVG::Text - Interface to 'text' of calendar in SVG f
 
 =head1 VERSION
 
-Version 0.03
+Version 0.04
 
 =cut
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg height="297mm" version="1.1" viewBox="0 0 210 297" width="210mm" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg height="297mm" viewBox="0 0 210 297" width="210mm" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 	<g id="calendar" label="Calendar">
 		<text fill="blue" id="month" style="font-size: 18.1907692307692" x="22.2411764705882" y="154.44">Baha</text>
 		<text fill="blue" id="year" style="text-align: end; text-anchor: end; font-size: 18.1907692307692" x="201.6" y="154.44">172</text>
@@ -146,7 +146,7 @@
 			<text adjust="spacing" fill="silver" fill-opacity="50%" font-size="7.63766153846154" id="text_row4_col7" length="2.27294117647059" stroke="green" text-anchor="right" x="178.663088235294" y="245.419384615385"> </text>
 		</g>
 	</g>
-	<!-- 
+	<!--
 	Generated using the Perl SVG Module V2.64
 	by Ronan Oger
 	Info: http://www.roitsystems.com/

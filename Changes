@@ -1,5 +1,8 @@
 Revision history for Calendar-Plugin-Renderer
 
+0.04  Tue Dec 29 09:15:00 2015
+      - Earlier attempt failed to fix the issue, giving another shot.
+
 0.03  Tue Dec 29 02:00:00 2015
       - Attempted to fix the test failure reported by CPAN Testers.
 
