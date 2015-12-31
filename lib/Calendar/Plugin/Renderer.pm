@@ -1,6 +1,6 @@
 package Calendar::Plugin::Renderer;
 
-$Calendar::Plugin::Renderer::VERSION   = '0.04';
+$Calendar::Plugin::Renderer::VERSION   = '0.05';
 $Calendar::Plugin::Renderer::AUTHORITY = 'cpan:MANWAR';
 
 =head1 NAME
@@ -9,13 +9,14 @@ Calendar::Plugin::Renderer - Interface to render calendar.
 
 =head1 VERSION
 
-Version 0.04
+Version 0.05
 
 =cut
 
 use 5.006;
 use Data::Dumper;
 
+use Calendar::Plugin::Renderer::Util qw(round_number);
 use Calendar::Plugin::Renderer::SVG;
 use Calendar::Plugin::Renderer::SVG::Box;
 use Calendar::Plugin::Renderer::SVG::Page;
@@ -102,8 +103,8 @@ sub svg_calendar {
     my $month_name    = $params->{month_name};
     my $days          = $params->{days};
 
-    my ($width,  $width_unit)  = (210 * 1.0, 'mm');
-    my ($height, $height_unit) = (297 * 1.0, 'mm');
+    my ($width,  $width_unit)  = (round_number(210 * 1.0), 'mm');
+    my ($height, $height_unit) = (round_number(297 * 1.0), 'mm');
 
     my $page = Calendar::Plugin::Renderer::SVG::Page->new(
         {
@@ -111,62 +112,62 @@ sub svg_calendar {
             width_unit  => $width_unit,
             height      => $height,
             height_unit => $height_unit,
-            x_margin    => $width  * $MARGIN_RATIO,
-            y_margin    => $height * $MARGIN_RATIO,
+            x_margin    => round_number($width  * $MARGIN_RATIO),
+            y_margin    => round_number($height * $MARGIN_RATIO),
         });
 
     my $rows = $MAX_WEEK_ROW + 1;
-    my $t    = ($rows + $ROUNDING_FACTOR) * (0.5 + $HEIGHT);
+    my $t    = round_number(($rows + $ROUNDING_FACTOR) * (0.5 + $HEIGHT));
     my $boundary_box = Calendar::Plugin::Renderer::SVG::Box->new(
         {
             'x'      => $page->x_margin,
-            'y'      => ($page->height * (1 - $HEIGHT)) + $page->y_margin,
-            'height' => (($page->height * $HEIGHT) - ($page->y_margin * 2)) - $t,
-            'width'  => $page->width - ($page->x_margin * 2)
+            'y'      => round_number(($page->height * (1 - $HEIGHT)) + $page->y_margin),
+            'height' => round_number((($page->height * $HEIGHT) - ($page->y_margin * 2)) - $t),
+            'width'  => round_number($page->width - ($page->x_margin * 2))
         });
 
-    my $row_height        = $boundary_box->height / ($rows + $ROUNDING_FACTOR) * (0.5 + $HEIGHT);
-    my $row_margin_height = $row_height / ($rows * 2);
+    my $row_height        = round_number($boundary_box->height / ($rows + $ROUNDING_FACTOR) * (0.5 + $HEIGHT));
+    my $row_margin_height = round_number($row_height / ($rows * 2));
 
     my $cols              = $DAY_COLS;
-    my $col_width         = $boundary_box->width / ($cols + $ROUNDING_FACTOR);
-    my $col_margin_width  = $col_width / ($cols * 2);
+    my $col_width         = round_number($boundary_box->width / ($cols + $ROUNDING_FACTOR));
+    my $col_margin_width  = round_number($col_width / ($cols * 2));
 
     my $month_label = Calendar::Plugin::Renderer::SVG::Label->new(
         {
-            'x'     => $boundary_box->x + ($col_margin_width * 2) + 11,
-            'y'     => $boundary_box->y - $page->y_margin/2,
+            'x'     => round_number($boundary_box->x + ($col_margin_width * 2) + 11),
+            'y'     => round_number($boundary_box->y - $page->y_margin/2),
             'style' => 'font-size: ' . ($row_height),
         });
 
     my $year_label = Calendar::Plugin::Renderer::SVG::Label->new(
        {
-           'x'     => $boundary_box->x + $boundary_box->width,
-           'y'     => $boundary_box->y - $page->y_margin/2,
+           'x'     => round_number($boundary_box->x + $boundary_box->width),
+           'y'     => round_number($boundary_box->y - $page->y_margin/2),
            'style' => 'text-align: end; text-anchor: end; font-size: ' . $row_height,
        });
 
     my $count = 1;
     my $wdays = [];
     for my $day (qw/Sun Mon Tue Wed Thu Fri Sat/) {
-        my $x = $boundary_box->x + $col_margin_width * (2 * $count + 1) + $col_width * ($count - 1) + $col_width / 2;
-        my $y = $boundary_box->y + $row_margin_height;
+        my $x = round_number($boundary_box->x + $col_margin_width * (2 * $count + 1) + $col_width * ($count - 1) + $col_width / 2);
+        my $y = round_number($boundary_box->y + $row_margin_height);
 
         my $wday_text = Calendar::Plugin::Renderer::SVG::Text->new(
             {
                 'value'     => $day,
-                'x'         => $x + $col_width  / $HEADING_DOW_WIDTH_SCALE,
-                'y'         => $y + $row_height * $HEADING_DOW_HEIGHT_SCALE,
-                'length'    => $col_width * $HEADING_WIDTH_SCALE,
+                'x'         => round_number($x + $col_width  / $HEADING_DOW_WIDTH_SCALE),
+                'y'         => round_number($y + $row_height * $HEADING_DOW_HEIGHT_SCALE),
+                'length'    => round_number($col_width * $HEADING_WIDTH_SCALE),
                 'adjust'    => 'spacing',
-                'font_size' => ($row_height * $HEADING_HEIGHT_SCALE)
+                'font_size' => round_number(($row_height * $HEADING_HEIGHT_SCALE))
             });
 
         push @$wdays, Calendar::Plugin::Renderer::SVG::Box->new(
             {
                 'x'      => $x,
                 'y'      => $y,
-                'height' => $row_height * $HEIGHT,
+                'height' => round_number($row_height * $HEIGHT),
                 'width'  => $col_width,
                 'text'   => $wday_text
             });
@@ -176,17 +177,17 @@ sub svg_calendar {
 
     my $days_box = [];
     foreach my $i (2 .. $rows) {
-        my $row_y = $boundary_box->y + $row_margin_height * (2 * $i - 1) + $row_height * ($i - 1);
+        my $row_y = round_number($boundary_box->y + $row_margin_height * (2 * $i - 1) + $row_height * ($i - 1));
         for my $j (2 .. $cols) {
-            my $x = ($boundary_box->x + $col_margin_width * (2 * $j - 1) + $col_width * ($j - 1)) - $col_width / 2;
-            my $y = $row_y - $row_height / 2;
+            my $x = round_number(($boundary_box->x + $col_margin_width * (2 * $j - 1) + $col_width * ($j - 1)) - $col_width / 2);
+            my $y = round_number($row_y - $row_height / 2);
 
         my $day_text = Calendar::Plugin::Renderer::SVG::Text->new(
             {
-                'x'         => $x + $col_margin_width * $TEXT_OFFSET_X,
-                'y'         => $y + $row_height * $TEXT_OFFSET_X,
-                'length'    => $col_width * $TEXT_WIDTH_RATIO,
-                'font_size' => (($row_height * $TEXT_HEIGHT_RATIO) + 5),
+                'x'         => round_number($x + $col_margin_width * $TEXT_OFFSET_X),
+                'y'         => round_number($y + $row_height * $TEXT_OFFSET_X),
+                'length'    => round_number($col_width * $TEXT_WIDTH_RATIO),
+                'font_size' => round_number((($row_height * $TEXT_HEIGHT_RATIO) + 5)),
             });
 
         $days_box->[$i - 1][$j - 1] = Calendar::Plugin::Renderer::SVG::Box->new(

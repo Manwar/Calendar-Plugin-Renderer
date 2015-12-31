@@ -1,6 +1,6 @@
 package Calendar::Plugin::Renderer::SVG::Label;
 
-$Calendar::Plugin::Renderer::SVG::Label::VERSION   = '0.04';
+$Calendar::Plugin::Renderer::SVG::Label::VERSION   = '0.05';
 $Calendar::Plugin::Renderer::SVG::Label::AUTHORITY = 'cpan:MANWAR';
 
 =head1 NAME
@@ -9,7 +9,7 @@ Calendar::Plugin::Renderer::SVG::Label - Interface to 'label' of calendar in SVG
 
 =head1 VERSION
 
-Version 0.04
+Version 0.05
 
 =cut
 
@@ -34,7 +34,7 @@ Mohammad S Anwar, C<< <mohammad.anwar at yahoo.com> >>
 
 =head1 REPOSITORY
 
-L<https://github.com/Manwar/Calendar-Plugin-Renderer>
+L<https://github.com/manwar/Calendar-Plugin-Renderer>
 
 =head1 BUGS
 

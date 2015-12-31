@@ -1,6 +1,6 @@
 package Calendar::Plugin::Renderer::SVG;
 
-$Calendar::Plugin::Renderer::SVG::VERSION   = '0.04';
+$Calendar::Plugin::Renderer::SVG::VERSION   = '0.05';
 $Calendar::Plugin::Renderer::SVG::AUTHORITY = 'cpan:MANWAR';
 
 =head1 NAME
@@ -9,7 +9,7 @@ Calendar::Plugin::Renderer::SVG - Interface to render calendar in SVG format.
 
 =head1 VERSION
 
-Version 0.04
+Version 0.05
 
 =cut
 
@@ -186,7 +186,7 @@ Mohammad S Anwar, C<< <mohammad.anwar at yahoo.com> >>
 
 =head1 REPOSITORY
 
-L<https://github.com/Manwar/Calendar-Plugin-Renderer>
+L<https://github.com/manwar/Calendar-Plugin-Renderer>
 
 =head1 BUGS
 

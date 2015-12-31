@@ -1,11 +1,11 @@
-package Calendar::Plugin::Renderer::SVG::Page;
+package Calendar::Plugin::Renderer::Util;
 
-$Calendar::Plugin::Renderer::SVG::Page::VERSION   = '0.05';
-$Calendar::Plugin::Renderer::SVG::Page::AUTHORITY = 'cpan:MANWAR';
+$Calendar::Plugin::Renderer::Util::VERSION   = '0.05';
+$Calendar::Plugin::Renderer::Util::AUTHORITY = 'cpan:MANWAR';
 
 =head1 NAME
 
-Calendar::Plugin::Renderer::SVG::Page - Interface to 'page' of calendar in SVG format.
+Calendar::Plugin::Renderer::Util - Helper package for Calendar::Plugin::Renderer.
 
 =head1 VERSION
 
@@ -13,22 +13,36 @@ Version 0.05
 
 =cut
 
+use vars qw(@ISA @EXPORT);
+require Exporter;
+@ISA    = qw(Exporter);
+@EXPORT = qw(round_number);
+
 use 5.006;
+use strict; use warnings;
 use Data::Dumper;
-
-use Moo;
-use namespace::clean;
-
-has 'width'       => (is => 'ro', required => 1);
-has 'width_unit'  => (is => 'ro', required => 1);
-has 'height'      => (is => 'ro', required => 1);
-has 'height_unit' => (is => 'ro', required => 1);
-has 'x_margin'    => (is => 'ro');
-has 'y_margin'    => (is => 'ro');
 
 =head1 DESCRIPTION
 
 B<FOR INTERNAL USE ONLY>.
+
+=head2 METHODS
+
+=head1 round_number($number, $digits)
+
+Round the given C<$number> by C<$digits>. By default round it by 4 digits.
+
+=cut
+
+sub round_number {
+    my ($number, $digits) = @_;
+
+    $digits    = 4 unless defined $digits;
+    my $format = sprintf("%02d", $digits);
+    $format    = '%.' . $format . 'f';
+
+    return sprintf($format, $number);
+}
 
 =head1 AUTHOR
 
@@ -49,7 +63,7 @@ bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc Calendar::Plugin::Renderer::SVG::Page
+    perldoc Calendar::Plugin::Renderer::Util
 
 You can also look for information at:
 
@@ -113,4 +127,4 @@ OF THE PACKAGE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 =cut
 
-1; # End of Calendar::Plugin::Renderer::SVG::Page
+1; # End of Calendar::Plugin::Renderer::Util

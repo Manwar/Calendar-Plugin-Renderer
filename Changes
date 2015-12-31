@@ -1,5 +1,8 @@
 Revision history for Calendar-Plugin-Renderer
 
+0.05  Thu Dec 31 01:05:00 2015
+      - Proposed fix for issue RT #110764.
+
 0.04  Tue Dec 29 09:15:00 2015
       - Earlier attempt failed to fix the issue, giving another shot.
 
