@@ -1,6 +1,6 @@
 package Calendar::Plugin::Renderer::Util;
 
-$Calendar::Plugin::Renderer::Util::VERSION   = '0.05';
+$Calendar::Plugin::Renderer::Util::VERSION   = '0.06';
 $Calendar::Plugin::Renderer::Util::AUTHORITY = 'cpan:MANWAR';
 
 =head1 NAME
@@ -9,14 +9,14 @@ Calendar::Plugin::Renderer::Util - Helper package for Calendar::Plugin::Renderer
 
 =head1 VERSION
 
-Version 0.05
+Version 0.06
 
 =cut
 
 use vars qw(@ISA @EXPORT);
 require Exporter;
 @ISA    = qw(Exporter);
-@EXPORT = qw(round_number);
+@EXPORT = qw(round_number get_max_week_rows);
 
 use 5.006;
 use strict; use warnings;
@@ -42,6 +42,42 @@ sub round_number {
     $format    = '%.' . $format . 'f';
 
     return sprintf($format, $number);
+}
+
+sub get_max_week_rows {
+    my ($start_index, $max_days, $max_week_row) = @_;
+
+    my $rows = 1;
+    my $i    = 1;
+    while ($i < $start_index) {
+        $i++;
+    }
+
+    my $d = 1;
+    while ($i <= 7) {
+        $d++;
+        $i++;
+    }
+
+    $rows++;
+    my $k = 1;
+    while ($d <= $max_days) {
+        if ($k == 7) {
+            $rows++;
+            $k = 1;
+        }
+        else {
+            $k++;
+        }
+        $d++;
+    }
+
+    if ($rows < $max_week_row) {
+        return $max_week_row;
+    }
+    else {
+        return $rows;
+    }
 }
 
 =head1 AUTHOR
@@ -89,7 +125,7 @@ L<http://search.cpan.org/dist/Calendar-Plugin-Renderer/>
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (C) 2015 Mohammad S Anwar.
+Copyright (C) 2015 - 2016 Mohammad S Anwar.
 
 This program  is  free software; you can redistribute it and / or modify it under
 the  terms  of the the Artistic License (2.0). You may obtain a  copy of the full

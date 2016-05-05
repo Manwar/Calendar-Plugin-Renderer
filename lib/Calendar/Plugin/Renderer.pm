@@ -1,6 +1,6 @@
 package Calendar::Plugin::Renderer;
 
-$Calendar::Plugin::Renderer::VERSION   = '0.05';
+$Calendar::Plugin::Renderer::VERSION   = '0.06';
 $Calendar::Plugin::Renderer::AUTHORITY = 'cpan:MANWAR';
 
 =head1 NAME
@@ -9,14 +9,14 @@ Calendar::Plugin::Renderer - Interface to render calendar.
 
 =head1 VERSION
 
-Version 0.05
+Version 0.06
 
 =cut
 
 use 5.006;
 use Data::Dumper;
 
-use Calendar::Plugin::Renderer::Util qw(round_number);
+use Calendar::Plugin::Renderer::Util qw(round_number get_max_week_rows);
 use Calendar::Plugin::Renderer::SVG;
 use Calendar::Plugin::Renderer::SVG::Box;
 use Calendar::Plugin::Renderer::SVG::Page;
@@ -44,9 +44,22 @@ my $MAX_WEEK_ROW             = 5;
 
 =head1 DESCRIPTION
 
-Base class  to render Calendar, currently in SVG format only. This plugin is soon
-to be  plugged  into L<Calendar::Bahai>, L<Calendar::Hijri>, L<Calendar::Persian>
-and L<Calendar::Saka>.
+Base class  to render Calendar, currently in SVG format only.This is plugged into
+the following calendars:
+
+=over 4
+
+=item * L<Calendar::Bahai>
+
+=item * L<Calendar::Gregorian>
+
+=item * L<Calendar::Hijri>
+
+=item * L<Calendar::Persian>
+
+=item * L<Calendar::Saka>
+
+=back
 
 =head1 SYNOPSIS
 
@@ -116,7 +129,7 @@ sub svg_calendar {
             y_margin    => round_number($height * $MARGIN_RATIO),
         });
 
-    my $rows = $MAX_WEEK_ROW + 1;
+    my $rows = get_max_week_rows($start_index, $days, $MAX_WEEK_ROW) + 1;
     my $t    = round_number(($rows + $ROUNDING_FACTOR) * (0.5 + $HEIGHT));
     my $boundary_box = Calendar::Plugin::Renderer::SVG::Box->new(
         {
@@ -178,26 +191,26 @@ sub svg_calendar {
     my $days_box = [];
     foreach my $i (2 .. $rows) {
         my $row_y = round_number($boundary_box->y + $row_margin_height * (2 * $i - 1) + $row_height * ($i - 1));
-        for my $j (2 .. $cols) {
+        foreach my $j (2 .. $cols) {
             my $x = round_number(($boundary_box->x + $col_margin_width * (2 * $j - 1) + $col_width * ($j - 1)) - $col_width / 2);
             my $y = round_number($row_y - $row_height / 2);
 
-        my $day_text = Calendar::Plugin::Renderer::SVG::Text->new(
-            {
-                'x'         => round_number($x + $col_margin_width * $TEXT_OFFSET_X),
-                'y'         => round_number($y + $row_height * $TEXT_OFFSET_X),
-                'length'    => round_number($col_width * $TEXT_WIDTH_RATIO),
-                'font_size' => round_number((($row_height * $TEXT_HEIGHT_RATIO) + 5)),
-            });
+            my $day_text = Calendar::Plugin::Renderer::SVG::Text->new(
+                {
+                    'x'         => round_number($x + $col_margin_width * $TEXT_OFFSET_X),
+                    'y'         => round_number($y + $row_height * $TEXT_OFFSET_X),
+                    'length'    => round_number($col_width * $TEXT_WIDTH_RATIO),
+                    'font_size' => round_number((($row_height * $TEXT_HEIGHT_RATIO) + 5)),
+                });
 
-        $days_box->[$i - 1][$j - 1] = Calendar::Plugin::Renderer::SVG::Box->new(
-            {
-                'x'      => $x,
-                'y'      => $y,
-                'height' => $row_height,
-                'width'  => $col_width,
-                'text'   => $day_text
-            });
+            $days_box->[$i - 1][$j - 1] = Calendar::Plugin::Renderer::SVG::Box->new(
+                {
+                    'x'      => $x,
+                    'y'      => $y,
+                    'height' => $row_height,
+                    'width'  => $col_width,
+                    'text'   => $day_text
+                });
         }
     }
 
@@ -274,7 +287,7 @@ L<http://search.cpan.org/dist/Calendar-Plugin-Renderer/>
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (C) 2015 Mohammad S Anwar.
+Copyright (C) 2015 - 2016 Mohammad S Anwar.
 
 This program  is  free software; you can redistribute it and / or modify it under
 the  terms  of the the Artistic License (2.0). You may obtain a  copy of the full

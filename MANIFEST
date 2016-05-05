@@ -12,10 +12,16 @@ lib/Calendar/Plugin/Renderer/SVG/Text.pm
 lib/Calendar/Plugin/Renderer/SVG/Box.pm
 lib/Calendar/Plugin/Renderer/SVG/Label.pm
 t/00-load.t
-t/01-svg-calendar.t
+t/calendar-plugin-renderer.t
 t/manifest.t
 t/pod.t
 t/bahai.xml
+t/gregorian.xml
+t/hijri.xml
+t/persian.xml
 t/saka.xml
 t/fake-bahai.xml
+t/fake-gregorian.xml
+t/fake-hijri.xml
+t/fake-persian.xml
 t/fake-saka.xml
