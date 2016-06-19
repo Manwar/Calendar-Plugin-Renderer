@@ -1,51 +1,32 @@
 package Calendar::Plugin::Renderer;
 
-$Calendar::Plugin::Renderer::VERSION   = '0.06';
+$Calendar::Plugin::Renderer::VERSION   = '0.07';
 $Calendar::Plugin::Renderer::AUTHORITY = 'cpan:MANWAR';
 
 =head1 NAME
 
-Calendar::Plugin::Renderer - Interface to render calendar.
+Calendar::Plugin::Renderer - Role to render calendar.
 
 =head1 VERSION
 
-Version 0.06
+Version 0.07
 
 =cut
 
 use 5.006;
 use Data::Dumper;
+use Term::ANSIColor::Markup;
 
-use Calendar::Plugin::Renderer::Util qw(round_number get_max_week_rows);
+use Calendar::Plugin::Renderer::Text;
 use Calendar::Plugin::Renderer::SVG;
-use Calendar::Plugin::Renderer::SVG::Box;
-use Calendar::Plugin::Renderer::SVG::Page;
-use Calendar::Plugin::Renderer::SVG::Text;
-use Calendar::Plugin::Renderer::SVG::Label;
 
 use Moo::Role;
 use namespace::clean;
 
-my $HEIGHT                   = 0.5;
-my $MARGIN_RATIO             = 0.04;
-my $DAY_COLS                 = 8;
-my $ROUNDING_FACTOR          = 0.5;
-my $TEXT_OFFSET_Y            = 0.1;
-my $TEXT_OFFSET_X            = 0.15;
-my $TEXT_WIDTH_RATIO         = 0.1;
-my $TEXT_HEIGHT_RATIO        = 0.145;
-my $HEADING_WIDTH_SCALE      = 0.8;
-my $HEADING_HEIGHT_SCALE     = 0.45;
-my $HEADING_DOW_WIDTH_SCALE  = 2;
-my $HEADING_DOW_HEIGHT_SCALE = 0.4;
-my $HEADING_WOY_WIDTH_SCALE  = 4;
-my $HEADING_WOY_HEIGHT_SCALE = 0.9;
-my $MAX_WEEK_ROW             = 5;
-
 =head1 DESCRIPTION
 
-Base class  to render Calendar, currently in SVG format only.This is plugged into
-the following calendars:
+Moo Role to render Calendar, currently in  SVG and Text format only. This role is
+taken by the following calendars:
 
 =over 4
 
@@ -65,15 +46,9 @@ the following calendars:
 
     package Cal;
 
-    use Calendar::Plugin::Renderer;
     use Moo;
     use namespace::clean;
-    use Role::Tiny;
-
-    sub BUILD {
-        my ($self) = @_;
-        Role::Tiny->apply_roles_to_object($self, 'Calendar::Plugin::Renderer');
-    }
+    with 'Calendar::Plugin::Renderer';
 
     package main;
 
@@ -82,12 +57,56 @@ the following calendars:
 
     my $cal = Cal->new;
     print $cal->svg_calendar({
-        start_index => 1,
-        month_name  => 'Chaitra',
-        days        => 30,
-        year        => 1937 });
+        start_index => 5,
+        month_name  => 'January',
+        days        => 31,
+        year        => 2016 });
+
+    print $cal->text_calendar({
+        start_index => 5,
+        month_name  => 'January',
+        days        => 31,
+        year        => 2016 });
 
 =head1 METHODS
+
+=head2 text_calendar()
+
+Returns the color coded calendar as a scalar string.It expects one parameter as a
+hash ref with keys mentioned in the below table.
+
+    +-------------+-------------------------------------------------------------+
+    | Key         | Description                                                 |
+    +-------------+-------------------------------------------------------------+
+    | start_index   | Index of first day of the month. (0-Sun,1-Mon etc)        |
+    | month_name    | Calendar month.                                           |
+    | days          | Days count in the month.                                  |
+    | year          | Calendar year.                                            |
+    | day_names   | Ref to a list of day name starting with Sunday. (Optional)  |
+    +-------------+-------------------------------------------------------------+
+
+=cut
+
+sub text_calendar {
+    my ($self, $params) = @_;
+
+    unless (exists $params->{day_names}) {
+        $params->{day_names} = [qw(Sun Mon Tue Wed Thu Fri Sat)];
+    }
+
+    my $text = Calendar::Plugin::Renderer::Text->new($params);
+
+    my $line1 = $text->get_dashed_line;
+    my $line2 = $text->get_month_header;
+    my $line3 = $text->get_blocked_line;
+    my $line4 = $text->get_day_header;
+    my $empty = $text->get_empty_space;
+    my $dates = $text->get_dates;
+
+    my $calendar = join("\n", $line1, $line2, $line3, $line4, $line3, $empty.$dates)."\n";
+
+    return Term::ANSIColor::Markup->colorize($calendar);
+}
 
 =head2 svg_calendar(\%param)
 
@@ -98,10 +117,10 @@ Expected paramaeters are as below:
     +---------------+-----------------------------------------------------------+
     | Key           | Description                                               |
     +---------------+-----------------------------------------------------------+
-    | start_index   | Index of first day of the month. (1-Sun,2-Mon etc)        |
-    | year          | Calendar year.                                            |
+    | start_index   | Index of first day of the month. (0-Sun,1-Mon etc)        |
     | month_name    | Calendar month.                                           |
     | days          | Days count in the month.                                  |
+    | year          | Calendar year.                                            |
     | adjust_height | Adjust height of the rows in Calendar. (Optional)         |
     +---------------+-----------------------------------------------------------+
 
@@ -110,126 +129,8 @@ Expected paramaeters are as below:
 sub svg_calendar {
     my ($self, $params) = @_;
 
-    my $adjust_height = $params->{adjust_height} || 0;
-    my $start_index   = $params->{start_index};
-    my $year          = $params->{year};
-    my $month_name    = $params->{month_name};
-    my $days          = $params->{days};
-
-    my ($width,  $width_unit)  = (round_number(210 * 1.0), 'mm');
-    my ($height, $height_unit) = (round_number(297 * 1.0), 'mm');
-
-    my $page = Calendar::Plugin::Renderer::SVG::Page->new(
-        {
-            width       => $width,
-            width_unit  => $width_unit,
-            height      => $height,
-            height_unit => $height_unit,
-            x_margin    => round_number($width  * $MARGIN_RATIO),
-            y_margin    => round_number($height * $MARGIN_RATIO),
-        });
-
-    my $rows = get_max_week_rows($start_index, $days, $MAX_WEEK_ROW) + 1;
-    my $t    = round_number(($rows + $ROUNDING_FACTOR) * (0.5 + $HEIGHT));
-    my $boundary_box = Calendar::Plugin::Renderer::SVG::Box->new(
-        {
-            'x'      => $page->x_margin,
-            'y'      => round_number(($page->height * (1 - $HEIGHT)) + $page->y_margin),
-            'height' => round_number((($page->height * $HEIGHT) - ($page->y_margin * 2)) - $t),
-            'width'  => round_number($page->width - ($page->x_margin * 2))
-        });
-
-    my $row_height        = round_number($boundary_box->height / ($rows + $ROUNDING_FACTOR) * (0.5 + $HEIGHT));
-    my $row_margin_height = round_number($row_height / ($rows * 2));
-
-    my $cols              = $DAY_COLS;
-    my $col_width         = round_number($boundary_box->width / ($cols + $ROUNDING_FACTOR));
-    my $col_margin_width  = round_number($col_width / ($cols * 2));
-
-    my $month_label = Calendar::Plugin::Renderer::SVG::Label->new(
-        {
-            'x'     => round_number($boundary_box->x + ($col_margin_width * 2) + 11),
-            'y'     => round_number($boundary_box->y - $page->y_margin/2),
-            'style' => 'font-size: ' . ($row_height),
-        });
-
-    my $year_label = Calendar::Plugin::Renderer::SVG::Label->new(
-       {
-           'x'     => round_number($boundary_box->x + $boundary_box->width),
-           'y'     => round_number($boundary_box->y - $page->y_margin/2),
-           'style' => 'text-align: end; text-anchor: end; font-size: ' . $row_height,
-       });
-
-    my $count = 1;
-    my $wdays = [];
-    for my $day (qw/Sun Mon Tue Wed Thu Fri Sat/) {
-        my $x = round_number($boundary_box->x + $col_margin_width * (2 * $count + 1) + $col_width * ($count - 1) + $col_width / 2);
-        my $y = round_number($boundary_box->y + $row_margin_height);
-
-        my $wday_text = Calendar::Plugin::Renderer::SVG::Text->new(
-            {
-                'value'     => $day,
-                'x'         => round_number($x + $col_width  / $HEADING_DOW_WIDTH_SCALE),
-                'y'         => round_number($y + $row_height * $HEADING_DOW_HEIGHT_SCALE),
-                'length'    => round_number($col_width * $HEADING_WIDTH_SCALE),
-                'adjust'    => 'spacing',
-                'font_size' => round_number(($row_height * $HEADING_HEIGHT_SCALE))
-            });
-
-        push @$wdays, Calendar::Plugin::Renderer::SVG::Box->new(
-            {
-                'x'      => $x,
-                'y'      => $y,
-                'height' => round_number($row_height * $HEIGHT),
-                'width'  => $col_width,
-                'text'   => $wday_text
-            });
-
-        $count++;
-    }
-
-    my $days_box = [];
-    foreach my $i (2 .. $rows) {
-        my $row_y = round_number($boundary_box->y + $row_margin_height * (2 * $i - 1) + $row_height * ($i - 1));
-        foreach my $j (2 .. $cols) {
-            my $x = round_number(($boundary_box->x + $col_margin_width * (2 * $j - 1) + $col_width * ($j - 1)) - $col_width / 2);
-            my $y = round_number($row_y - $row_height / 2);
-
-            my $day_text = Calendar::Plugin::Renderer::SVG::Text->new(
-                {
-                    'x'         => round_number($x + $col_margin_width * $TEXT_OFFSET_X),
-                    'y'         => round_number($y + $row_height * $TEXT_OFFSET_X),
-                    'length'    => round_number($col_width * $TEXT_WIDTH_RATIO),
-                    'font_size' => round_number((($row_height * $TEXT_HEIGHT_RATIO) + 5)),
-                });
-
-            $days_box->[$i - 1][$j - 1] = Calendar::Plugin::Renderer::SVG::Box->new(
-                {
-                    'x'      => $x,
-                    'y'      => $y,
-                    'height' => $row_height,
-                    'width'  => $col_width,
-                    'text'   => $day_text
-                });
-        }
-    }
-
-    my $svg = Calendar::Plugin::Renderer::SVG->new(
-        {
-            days          => $days_box,
-            month         => $month_label,
-            year          => $year_label,
-            wdays         => $wdays,
-            page          => $page,
-            boundary_box  => $boundary_box,
-            adjust_height => $adjust_height,
-        });
-
-    $svg->process({
-        start_index => $start_index,
-        year        => $year,
-        month_name  => $month_name,
-        days        => $days });
+    my $svg = Calendar::Plugin::Renderer::SVG->new($params);
+    $svg->process;
 
     return $svg->as_string;
 }

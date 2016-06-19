@@ -15,16 +15,17 @@ WriteMakefile(
     CONFIGURE_REQUIRES => {
         'ExtUtils::MakeMaker' => 0,
     },
-    BUILD_REQUIRES  => {
+    BUILD_REQUIRES => {
         'Test::More'        => 0,
         'File::Temp'        => 0,
         'XML::SemanticDiff' => 0,
     },
     PREREQ_PM => {
-        'SVG'              => '2.64',
-        'Moo'              => '2.000000',
-        'Moo::Role'        => '2.000000',
-        'namespace::clean' => '0.24',
+        'Term::ANSIColor::Markup' => '0.06',
+        'SVG'                     => '2.64',
+        'Moo'                     => '2.000000',
+        'Moo::Role'               => '2.000000',
+        'namespace::clean'        => '0.24',
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES => 'Calendar-Plugin-Renderer-*' },

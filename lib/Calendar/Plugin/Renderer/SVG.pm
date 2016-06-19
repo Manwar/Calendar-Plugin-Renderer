@@ -16,18 +16,45 @@ Version 0.06
 use 5.006;
 use Data::Dumper;
 
+use Calendar::Plugin::Renderer::Util qw(round_number get_max_week_rows);
+use Calendar::Plugin::Renderer::SVG::Box;
+use Calendar::Plugin::Renderer::SVG::Page;
+use Calendar::Plugin::Renderer::SVG::Text;
+use Calendar::Plugin::Renderer::SVG::Label;
+
 use SVG;
 use Moo;
 use namespace::clean;
 
-has 'days'          => (is => 'rw', required => 1);
-has 'month'         => (is => 'rw', required => 1);
-has 'year'          => (is => 'rw', required => 1);
-has 'wdays'         => (is => 'rw', required => 1);
-has 'page'          => (is => 'rw', required => 1);
-has 'boundary_box'  => (is => 'rw', required => 1);
-has 'adjust_height' => (is => 'ro', default => sub { 0 });
+has 'days'          => (is => 'ro', required => 1);
+has 'month_name'    => (is => 'ro', required => 1);
+has 'year'          => (is => 'ro', required => 1);
+has 'start_index'   => (is => 'ro', required => 1);
+
+has 'days_box'      => (is => 'rw');
+has 'month_label'   => (is => 'rw');
+has 'year_label'    => (is => 'rw');
+has 'wdays'         => (is => 'rw');
+has 'page'          => (is => 'rw');
+has 'boundary_box'  => (is => 'rw');
+has 'adjust_height' => (is => 'rw', default => sub { 0 });
 has '_row'          => (is => 'rw');
+
+my $HEIGHT                   = 0.5;
+my $MARGIN_RATIO             = 0.04;
+my $DAY_COLS                 = 8;
+my $ROUNDING_FACTOR          = 0.5;
+my $TEXT_OFFSET_Y            = 0.1;
+my $TEXT_OFFSET_X            = 0.15;
+my $TEXT_WIDTH_RATIO         = 0.1;
+my $TEXT_HEIGHT_RATIO        = 0.145;
+my $HEADING_WIDTH_SCALE      = 0.8;
+my $HEADING_HEIGHT_SCALE     = 0.45;
+my $HEADING_DOW_WIDTH_SCALE  = 2;
+my $HEADING_DOW_HEIGHT_SCALE = 0.4;
+my $HEADING_WOY_WIDTH_SCALE  = 4;
+my $HEADING_WOY_HEIGHT_SCALE = 0.9;
+my $MAX_WEEK_ROW             = 5;
 
 =head1 DESCRIPTION
 
@@ -35,36 +62,153 @@ B<FOR INTERNAL USE ONLY>
 
 =cut
 
-sub process {
+sub BUILD {
     my ($self, $params) = @_;
 
-    $self->year->text($params->{year});
-    $self->month->text($params->{month_name});
+    my $adjust_height = $params->{adjust_height} || 0;
+    my $start_index   = $params->{start_index};
+    my $year          = $params->{year};
+    my $month_name    = $params->{month_name};
+    my $days          = $params->{days};
 
-    my $start_index    = $params->{start_index};
-    my $max_month_days = $params->{days};
+    my ($width,  $width_unit)  = (round_number(210 * 1.0), 'mm');
+    my ($height, $height_unit) = (round_number(297 * 1.0), 'mm');
+
+    my $page = Calendar::Plugin::Renderer::SVG::Page->new(
+        {
+            width       => $width,
+            width_unit  => $width_unit,
+            height      => $height,
+            height_unit => $height_unit,
+            x_margin    => round_number($width  * $MARGIN_RATIO),
+            y_margin    => round_number($height * $MARGIN_RATIO),
+        });
+
+    my $rows = get_max_week_rows($start_index, $days, $MAX_WEEK_ROW) + 1;
+    my $t    = round_number(($rows + $ROUNDING_FACTOR) * (0.5 + $HEIGHT));
+    my $boundary_box = Calendar::Plugin::Renderer::SVG::Box->new(
+        {
+            'x'      => $page->x_margin,
+            'y'      => round_number(($page->height * (1 - $HEIGHT)) + $page->y_margin),
+            'height' => round_number((($page->height * $HEIGHT) - ($page->y_margin * 2)) - $t),
+            'width'  => round_number($page->width - ($page->x_margin * 2))
+        });
+
+    my $row_height        = round_number($boundary_box->height / ($rows + $ROUNDING_FACTOR) * (0.5 + $HEIGHT));
+    my $row_margin_height = round_number($row_height / ($rows * 2));
+
+    my $cols              = $DAY_COLS;
+    my $col_width         = round_number($boundary_box->width / ($cols + $ROUNDING_FACTOR));
+    my $col_margin_width  = round_number($col_width / ($cols * 2));
+
+    my $month_label = Calendar::Plugin::Renderer::SVG::Label->new(
+        {
+            'x'     => round_number($boundary_box->x + ($col_margin_width * 2) + 11),
+            'y'     => round_number($boundary_box->y - $page->y_margin/2),
+            'style' => 'font-size: ' . ($row_height),
+        });
+
+    my $year_label = Calendar::Plugin::Renderer::SVG::Label->new(
+       {
+           'x'     => round_number($boundary_box->x + $boundary_box->width),
+           'y'     => round_number($boundary_box->y - $page->y_margin/2),
+           'style' => 'text-align: end; text-anchor: end; font-size: ' . $row_height,
+       });
+
+    my $count = 1;
+    my $wdays = [];
+    for my $day (qw/Sun Mon Tue Wed Thu Fri Sat/) {
+        my $x = round_number($boundary_box->x + $col_margin_width * (2 * $count + 1) + $col_width * ($count - 1) + $col_width / 2);
+        my $y = round_number($boundary_box->y + $row_margin_height);
+
+        my $wday_text = Calendar::Plugin::Renderer::SVG::Text->new(
+            {
+                'value'     => $day,
+                'x'         => round_number($x + $col_width  / $HEADING_DOW_WIDTH_SCALE),
+                'y'         => round_number($y + $row_height * $HEADING_DOW_HEIGHT_SCALE),
+                'length'    => round_number($col_width * $HEADING_WIDTH_SCALE),
+                'adjust'    => 'spacing',
+                'font_size' => round_number(($row_height * $HEADING_HEIGHT_SCALE))
+            });
+
+        push @$wdays, Calendar::Plugin::Renderer::SVG::Box->new(
+            {
+                'x'      => $x,
+                'y'      => $y,
+                'height' => round_number($row_height * $HEIGHT),
+                'width'  => $col_width,
+                'text'   => $wday_text
+            });
+
+        $count++;
+    }
+
+    my $days_box = [];
+    foreach my $i (2 .. $rows) {
+        my $row_y = round_number($boundary_box->y + $row_margin_height * (2 * $i - 1) + $row_height * ($i - 1));
+        foreach my $j (2 .. $cols) {
+            my $x = round_number(($boundary_box->x + $col_margin_width * (2 * $j - 1) + $col_width * ($j - 1)) - $col_width / 2);
+            my $y = round_number($row_y - $row_height / 2);
+
+            my $day_text = Calendar::Plugin::Renderer::SVG::Text->new(
+                {
+                    'x'         => round_number($x + $col_margin_width * $TEXT_OFFSET_X),
+                    'y'         => round_number($y + $row_height * $TEXT_OFFSET_X),
+                    'length'    => round_number($col_width * $TEXT_WIDTH_RATIO),
+                    'font_size' => round_number((($row_height * $TEXT_HEIGHT_RATIO) + 5)),
+                });
+
+            $days_box->[$i - 1][$j - 2] = Calendar::Plugin::Renderer::SVG::Box->new(
+                {
+                    'x'      => $x,
+                    'y'      => $y,
+                    'height' => $row_height,
+                    'width'  => $col_width,
+                    'text'   => $day_text
+                });
+        }
+    }
+
+    $year_label->text($year);
+    $month_label->text($month_name);
+
+    $self->{days_box}      = $days_box;
+    $self->{month_label}   = $month_label;
+    $self->{year_label}    = $year_label;
+    $self->{wdays}         = $wdays;
+    $self->{page}          = $page;
+    $self->{boundary_box}  = $boundary_box;
+    $self->{adjust_height} = $adjust_height;
+};
+
+sub process {
+    my ($self) = @_;
+
+    my $start_index    = $self->start_index;
+    my $max_month_days = $self->days;
+    my $days_box       = $self->days_box;
 
     my $row = 1;
-    my $i   = 1;
+    my $i   = 0;
     while ($i < $start_index) {
-        $self->days->[$row][$i]->text->value(' ');
+        $days_box->[$row][$i]->text->value(' ');
         $i++;
     }
 
     my $d = 1;
-    while ($i <= 7) {
-        $self->days->[$row][$i]->text->value($d);
+    while ($i <= 6) {
+        $days_box->[$row][$i]->text->value($d);
         $i++;
         $d++;
     }
 
     $row++;
-    my $k = 1;
+    my $k = 0;
     while ($d <= $max_month_days) {
-        $self->days->[$row][$k]->text->value($d);
-        if ($k == 7) {
+        $days_box->[$row][$k]->text->value($d);
+        if ($k == 6) {
             $row++;
-            $k = 1;
+            $k = 0;
         }
         else {
             $k++;
@@ -91,25 +235,29 @@ sub as_string {
         -sysid       => 'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd');
     my $calendar = $svg->group(id => 'calendar', label => "Calendar");
 
+    my $month_label = $self->month_label;
     $calendar->text('id'    => "month",
                     'fill'  => 'blue',
-                    'x'     => $self->month->x,
-                    'y'     => $self->month->y,
-                    'style' => $self->month->style)->cdata($self->month->text);
+                    'x'     => $month_label->x,
+                    'y'     => $month_label->y,
+                    'style' => $month_label->style)->cdata($month_label->text);
 
+    my $year_label = $self->year_label;
     $calendar->text('id'    => "year",
                     'fill'  => 'blue',
-                    'x'     => $self->year->x,
-                    'y'     => $self->year->y,
-                    'style' => $self->year->style)->cdata($self->year->text);
+                    'x'     => $year_label->x,
+                    'y'     => $year_label->y,
+                    'style' => $year_label->style)->cdata($year_label->text);
 
+    my $boundary_box = $self->boundary_box;
     $calendar->rect('id'     => 'bounding_box',
-                    'height' => $self->boundary_box->height - $self->adjust_height,
-                    'width'  => $self->boundary_box->width - 14,
-                    'x'      => $self->boundary_box->x + 7 + 7,
-                    'y'      => $self->boundary_box->y,
+                    'height' => $boundary_box->height - $self->adjust_height,
+                    'width'  => $boundary_box->width - 14,
+                    'x'      => $boundary_box->x + 7 + 7,
+                    'y'      => $boundary_box->y,
                     'style'  => 'fill:none; stroke: blue; stroke-width: 0.5;');
 
+    my $wdays = $self->wdays;
     foreach (0..6) {
         my $day = $calendar->tag('g',
                                  'id'           => "row0_col$_",
@@ -117,31 +265,32 @@ sub as_string {
                                  'fill'         => 'none',
                                  'stroke'       => 'blue',
                                  'stroke-width' => '0.5');
-        next unless defined $self->wdays->[$_];
+        next unless defined $wdays->[$_];
 
         $day->rect('id'     => "box_row0_col$_",
-                   'x'      => $self->wdays->[$_]->x,
-                   'y'      => $self->wdays->[$_]->y,
-                   'height' => $self->wdays->[$_]->height,
-                   'width'  => $self->wdays->[$_]->width);
+                   'x'      => $wdays->[$_]->x,
+                   'y'      => $wdays->[$_]->y,
+                   'height' => $wdays->[$_]->height,
+                   'width'  => $wdays->[$_]->width);
         $day->text('id'          => "text_row0_col$_",
-                   'x'           => $self->wdays->[$_]->text->x,
-                   'y'           => $self->wdays->[$_]->text->y,
-                   'length'      => $self->wdays->[$_]->text->length,
-                   'adjust'      => $self->wdays->[$_]->text->adjust,
-                   'font-size'   => $self->wdays->[$_]->text->font_size,
+                   'x'           => $wdays->[$_]->text->x,
+                   'y'           => $wdays->[$_]->text->y,
+                   'length'      => $wdays->[$_]->text->length,
+                   'adjust'      => $wdays->[$_]->text->adjust,
+                   'font-size'   => $wdays->[$_]->text->font_size,
                    'text-anchor' => 'middle',
                    'stroke'      => 'red')
-            ->cdata($self->wdays->[$_]->text->value);
+            ->cdata($wdays->[$_]->text->value);
     }
 
-    my $row = $self->_row;
+    my $row      = $self->_row;
+    my $days_box = $self->days_box;
     foreach my $r (1..$row) {
-        foreach my $c (1..7) {
+        foreach my $c (0..6) {
             my $g_id = sprintf("row%d_col%d"     , $r, $c);
             my $r_id = sprintf("box_row%d_col%d" , $r, $c);
             my $t_id = sprintf("text_row%d_col%d", $r, $c);
-            next unless defined $self->days->[$r]->[$c];
+            next unless defined $days_box->[$r]->[$c];
 
             my $d = $calendar->tag('g',
                                    'id'           => "$g_id",
@@ -149,26 +298,26 @@ sub as_string {
                                    'stroke'       => 'blue',
                                    'stroke-width' => '0.5');
             $d->rect('id'     => "$r_id",
-                     'x'      => $self->days->[$r]->[$c]->x,
-                     'y'      => $self->days->[$r]->[$c]->y,
-                     'height' => $self->days->[$r]->[$c]->height,
-                     'width'  => $self->days->[$r]->[$c]->width,
+                     'x'      => $days_box->[$r]->[$c]->x,
+                     'y'      => $days_box->[$r]->[$c]->y,
+                     'height' => $days_box->[$r]->[$c]->height,
+                     'width'  => $days_box->[$r]->[$c]->width,
                      'fill'         => 'none',
                      'stroke'       => 'blue',
                      'stroke-width' => '0.5');
 
             my $text = ' ';
-            if (defined $self->days->[$r]->[$c]->text
-                && defined $self->days->[$r]->[$c]->text->value) {
-                $text = $self->days->[$r]->[$c]->text->value;
+            if (defined $days_box->[$r]->[$c]->text
+                && defined $days_box->[$r]->[$c]->text->value) {
+                $text = $days_box->[$r]->[$c]->text->value;
             }
 
             $d->text('id'     => "$t_id",
-                     'x'      => $self->days->[$r]->[$c]->text->x + 1,
-                     'y'      => $self->days->[$r]->[$c]->text->y + 5,
-                     'length' => $self->days->[$r]->[$c]->text->length,
+                     'x'      => $days_box->[$r]->[$c]->text->x + 1,
+                     'y'      => $days_box->[$r]->[$c]->text->y + 5,
+                     'length' => $days_box->[$r]->[$c]->text->length,
                      'adjust' => 'spacing',
-                     'font-size'    => $self->days->[$r]->[$c]->text->font_size,
+                     'font-size'    => $days_box->[$r]->[$c]->text->font_size,
                      'stroke'       => 'green',
                      'text-anchor'  => 'right',
                      'fill'         => 'silver',

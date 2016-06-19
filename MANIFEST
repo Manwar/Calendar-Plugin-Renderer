@@ -6,6 +6,7 @@ Makefile.PL
 README
 lib/Calendar/Plugin/Renderer.pm
 lib/Calendar/Plugin/Renderer/Util.pm
+lib/Calendar/Plugin/Renderer/Text.pm
 lib/Calendar/Plugin/Renderer/SVG.pm
 lib/Calendar/Plugin/Renderer/SVG/Page.pm
 lib/Calendar/Plugin/Renderer/SVG/Text.pm
