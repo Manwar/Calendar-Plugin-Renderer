@@ -1,6 +1,6 @@
 package Calendar::Plugin::Renderer::Text;
 
-$Calendar::Plugin::Renderer::Text::VERSION   = '0.07';
+$Calendar::Plugin::Renderer::Text::VERSION   = '0.08';
 $Calendar::Plugin::Renderer::Text::AUTHORITY = 'cpan:MANWAR';
 
 =head1 NAME
@@ -9,7 +9,7 @@ Calendar::Plugin::Renderer::Text - Interface to render calendar in text format.
 
 =head1 VERSION
 
-Version 0.07
+Version 0.08
 
 =cut
 

@@ -1,6 +1,6 @@
 package Calendar::Plugin::Renderer::SVG::Page;
 
-$Calendar::Plugin::Renderer::SVG::Page::VERSION   = '0.07';
+$Calendar::Plugin::Renderer::SVG::Page::VERSION   = '0.08';
 $Calendar::Plugin::Renderer::SVG::Page::AUTHORITY = 'cpan:MANWAR';
 
 =head1 NAME
@@ -9,7 +9,7 @@ Calendar::Plugin::Renderer::SVG::Page - Interface to 'page' of calendar in SVG f
 
 =head1 VERSION
 
-Version 0.07
+Version 0.08
 
 =cut
 
