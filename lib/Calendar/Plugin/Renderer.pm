@@ -1,6 +1,6 @@
 package Calendar::Plugin::Renderer;
 
-$Calendar::Plugin::Renderer::VERSION   = '0.08';
+$Calendar::Plugin::Renderer::VERSION   = '0.09';
 $Calendar::Plugin::Renderer::AUTHORITY = 'cpan:MANWAR';
 
 =head1 NAME
@@ -9,7 +9,7 @@ Calendar::Plugin::Renderer - Role to render calendar.
 
 =head1 VERSION
 
-Version 0.08
+Version 0.09
 
 =cut
 

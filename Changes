@@ -1,5 +1,9 @@
 Revision history for Calendar::Plugin::Renderer
 
+0.09  Mon Jul 04 03:15:00 2016
+      - Addressed issue raised in the CPAN Tester Report.
+        http://www.cpantesters.org/cpan/report/c3d0dba4-3fc8-11e6-b825-5b09fd635119
+
 0.08  Tue Jun 21 12:20:00 2016
       - Fixed 'consistent version' issue raised by CPANTS.
 
