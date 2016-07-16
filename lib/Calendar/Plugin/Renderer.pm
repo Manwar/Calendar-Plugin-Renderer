@@ -1,6 +1,6 @@
 package Calendar::Plugin::Renderer;
 
-$Calendar::Plugin::Renderer::VERSION   = '0.09';
+$Calendar::Plugin::Renderer::VERSION   = '0.10';
 $Calendar::Plugin::Renderer::AUTHORITY = 'cpan:MANWAR';
 
 =head1 NAME
@@ -9,7 +9,7 @@ Calendar::Plugin::Renderer - Role to render calendar.
 
 =head1 VERSION
 
-Version 0.09
+Version 0.10
 
 =cut
 
@@ -70,18 +70,19 @@ taken by the following calendars:
 
 =head1 METHODS
 
-=head2 text_calendar()
+=head2 text_calendar(\%params)
 
-Returns the color coded calendar as a scalar string.It expects one parameter as a
-hash ref with keys mentioned in the below table.
+Returns the color coded calendar as a scalar string.
+
+Expected paramaeters are as below:
 
     +-------------+-------------------------------------------------------------+
     | Key         | Description                                                 |
     +-------------+-------------------------------------------------------------+
-    | start_index   | Index of first day of the month. (0-Sun,1-Mon etc)        |
-    | month_name    | Calendar month.                                           |
-    | days          | Days count in the month.                                  |
-    | year          | Calendar year.                                            |
+    | start_index | Index of first day of the month. (0-Sun,1-Mon etc)          |
+    | month_name  | Calendar month.                                             |
+    | days        | Days count in the month.                                    |
+    | year        | Calendar year.                                              |
     | day_names   | Ref to a list of day name starting with Sunday. (Optional)  |
     +-------------+-------------------------------------------------------------+
 
@@ -108,7 +109,7 @@ sub text_calendar {
     return Term::ANSIColor::Markup->colorize($calendar);
 }
 
-=head2 svg_calendar(\%param)
+=head2 svg_calendar(\%params)
 
 Returns the requested calendar month in SVG format.
 

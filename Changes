@@ -1,5 +1,9 @@
 Revision history for Calendar::Plugin::Renderer
 
+0.10  Sat Jul 16 22:00:00 2016
+      - Update pod document for method text_calendar().
+      - Added key 'provides' to the Makefile.PL script as suggested by CPANTS.
+
 0.09  Mon Jul 04 03:15:00 2016
       - Addressed issue raised in the CPAN Tester Report.
         http://www.cpantesters.org/cpan/report/c3d0dba4-3fc8-11e6-b825-5b09fd635119
