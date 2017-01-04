@@ -15,6 +15,7 @@ Version 0.11
 
 use 5.006;
 use Data::Dumper;
+use XML::SemanticDiff;
 use Term::ANSIColor::Markup;
 
 use Calendar::Plugin::Renderer::Text;
@@ -134,6 +135,32 @@ sub svg_calendar {
     $svg->process;
 
     return $svg->as_string;
+}
+
+=head2 is_same($other_svg_calendar_file, $show_difference)
+
+Return 0 / 1 depending whether the given calendar file (svg) is same as the given
+calendar object.
+
+=cut
+
+sub is_same {
+    my ($self, $other, $show_diff) = @_;
+
+    my $dir = tempdir(CLEANUP => 1);
+    my ($fh, $filename) = tempfile(DIR => $dir);
+    print $fh $self->as_svg;
+    close $fh;
+
+    my $xml = XML::SemanticDiff->new;
+    my @changes = $xml->compare($filename, $other);
+
+    if ($show_diff) {
+        print STDOUT join ("\n", @changes);
+    }
+
+    return (scalar(@changes))?(0):(1);
+
 }
 
 =head1 AUTHOR
