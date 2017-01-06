@@ -1,6 +1,6 @@
 package Calendar::Plugin::Renderer;
 
-$Calendar::Plugin::Renderer::VERSION   = '0.11';
+$Calendar::Plugin::Renderer::VERSION   = '0.12';
 $Calendar::Plugin::Renderer::AUTHORITY = 'cpan:MANWAR';
 
 =head1 NAME
@@ -9,7 +9,7 @@ Calendar::Plugin::Renderer - Role to render calendar.
 
 =head1 VERSION
 
-Version 0.11
+Version 0.12
 
 =cut
 
@@ -134,6 +134,34 @@ sub svg_calendar {
     $svg->process;
 
     return $svg->as_string;
+}
+
+=head2 validate_params($month, $year)
+
+Validate given  C<$month>  and C<$year> as per the Calendar guidelines. C<$month>
+can be "name" or "integer". If C<$month> is passed as "name"  then it converts it
+it into its "integer" equivalent. Both parameters are optional. In  case they are
+missing, it returns the current month and year of the selected calendar.
+
+=cut
+
+sub validate_params {
+    my ($self, $month, $year) = @_;
+
+    if (defined $month && defined $year) {
+        $self->date->validate_month($month);
+        $self->date->validate_year($year);
+
+        if ($month !~ /^\d+$/) {
+            $month = $self->date->get_month_number($month);
+        }
+    }
+    else {
+        $month = $self->month;
+        $year  = $self->year;
+    }
+
+    return ($month, $year);
 }
 
 =head1 AUTHOR
